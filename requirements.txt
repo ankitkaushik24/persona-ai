@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+python-dotenv
+llama-index
+llama-index-embeddings-google
+llama-index-llms-google-genai
+chromadb
+google-generativeai
