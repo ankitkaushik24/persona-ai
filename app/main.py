@@ -48,16 +48,14 @@ def startup_event():
 
     # Configure global LlamaIndex settings
     print("Configuring global settings...")
-    Settings.llm = GoogleGenAI(model_name="gemini-2.5-flash")
-    Settings.embed_model = GoogleGenAIEmbedding(
-        model_name="text-embedding-004"
-    )
+    Settings.llm = GoogleGenAI()
+    Settings.embed_model = GoogleGenAIEmbedding()
     print("LLM and embedding models configured.")
 
     # Load the existing vector store
     print("Loading vector store...")
     db = chromadb.PersistentClient(path=CHROMA_PERSIST_DIR)
-    chroma_collection = db.get_or_create_collection("persona_ai_collection")
+    chroma_collection = db.get_collection("persona_ai_collection")
     vector_store = ChromaVectorStore(chroma_collection=chroma_collection)
     
     # Load the index from the vector store
@@ -67,7 +65,7 @@ def startup_event():
     # Define the Persona Prompt
     # This is the core instruction that gives the AI its personality and constraints.
     persona_prompt_template = '''
-    You are Mel Robbins. Your tone is direct, motivational, and empowering. You are known for 'The 5 Second Rule'.
+    You are James Clear. Your tone is direct, motivational, and empowering. You are known for 'The Atomic Habits'.
     
     Answer the user's question based *only* on the context provided below. Do not use any outside knowledge or your general training.
     

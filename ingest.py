@@ -54,26 +54,9 @@ def main():
         print(f"Error loading documents: {e}")
         return
 
-    # --- DEBUG: Test Embedding Model ---
-    print("\n--- Testing Embedding Model ---")
-    try:
-        sample_text = "This is a test to see if the embedding model is working."
-        if documents:
-            sample_text = documents[0].text[:200] # Use actual document text
-        
-        embed_model = GoogleGenAIEmbedding(model_name="text-embedding-004")
-        embedding = embed_model.get_text_embedding(sample_text)
-        print(f"Successfully generated an embedding of dimension: {len(embedding)}")
-        print("Embedding model appears to be working correctly.")
-    except Exception as e:
-        print(f"!!! Error testing embedding model: {e} !!!")
-        print("The embedding model is likely the cause of the issue. Please check your API key and model access.")
-        return
-    print("-----------------------------\n")
-
     # 3. Set up the embedding model and global settings
     # We use Google's Gemini embedding model and set it in the global Settings
-    Settings.embed_model = GoogleGenAIEmbedding(model_name="text-embedding-004")
+    Settings.embed_model = GoogleGenAIEmbedding()
     print("Gemini embedding model initialized and set in global Settings.")
 
     # 4. Set up the StorageContext
@@ -89,15 +72,24 @@ def main():
     # - Generates embeddings for each node using the model from Settings
     # - Stores the embeddings in the ChromaDB vector_store
     print("Creating index and generating embeddings... (This may take a while)")
-    index = VectorStoreIndex.from_documents(
-        documents,
-        storage_context=storage_context,
-        show_progress=True,
-    )
-    
+    try:
+        index = VectorStoreIndex.from_documents(
+            documents,
+            storage_context=storage_context,
+            embed_model=Settings.embed_model,
+            show_progress=True,
+        )
+    except Exception as e:
+        print(f"Error creating index: {e}")
+        return
+
+    # To verify, we can directly query the number of items in the Chroma collection.
+    num_nodes = len(chroma_collection.get()["ids"])
+
     print("--------------------------------------------------")
     print("Ingestion complete!")
     print(f"Index created successfully with {len(index.docstore.docs)} nodes.")
+    print(f"Index created successfully with {num_nodes} nodes.")
     print(f"Embeddings are stored in: {os.path.abspath(CHROMA_PERSIST_DIR)}")
     print("--------------------------------------------------")
 
