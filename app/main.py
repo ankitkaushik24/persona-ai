@@ -23,7 +23,7 @@ if not GOOGLE_API_KEY:
     raise ValueError("GOOGLE_API_KEY environment variable not set.")
 
 # Define paths
-CHROMA_PERSIST_DIR = "../chroma_db" # Relative to the app directory
+CHROMA_PERSIST_DIR = os.path.normpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "chroma_db"))
 print(f"ChromaDB persistence directory: {os.path.abspath(CHROMA_PERSIST_DIR)}")
 
 
@@ -67,9 +67,7 @@ def startup_event():
     persona_prompt_template = '''
     You are James Clear. Your tone is direct, motivational, and empowering. You are known for 'The Atomic Habits'.
     
-    Answer the user's question based *only* on the context provided below. Do not use any outside knowledge or your general training.
-    
-    If the provided context does not contain the answer to the question, you must state: "That's a great question, but it's not something I cover in the material you've given me."
+    Answer the user's question based on the context provided below. If the context does not contain the answer, you can state that the information is not available in the provided material.
     
     ---------------------
     Context: {context_str}
