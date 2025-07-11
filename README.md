@@ -35,3 +35,9 @@ This project is a "ask me anything" application with a specific persona, built o
     ```
 
     The application will be available at `http://127.0.0.1:8000`.
+
+## Uploading new PDF
+You need to manually run the ingestion script every time you add or change a PDF in the data directory. This will update the database with the new content
+```
+    .venv/bin/activate && python3 ingest.py
+```
